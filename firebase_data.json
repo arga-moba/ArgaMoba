@@ -1,0 +1,22 @@
+{
+  "rooms": {
+    "ROOM001": {
+      "createdAt": 1680000000000,
+      "status": "waiting",
+      "timer": null,
+      "host": "playerId1",
+      "players": {
+        "playerId1": {"name": "Player_001", "team": "blue", "ready": false},
+        "playerId2": {"name": "Player_002", "team": "blue", "ready": false},
+        "playerId3": {"name": "Player_003", "team": "blue", "ready": false},
+        "playerId4": {"name": "Player_004", "team": "blue", "ready": false},
+        "playerId5": {"name": "Player_005", "team": "blue", "ready": false},
+        "playerId6": {"name": "Player_006", "team": "red", "ready": false},
+        "playerId7": {"name": "Player_007", "team": "red", "ready": false},
+        "playerId8": {"name": "Player_008", "team": "red", "ready": false},
+        "playerId9": {"name": "Player_009", "team": "red", "ready": false},
+        "playerId10":{"name": "Player_010","team": "red","ready": false}
+      }
+    }
+  }
+}

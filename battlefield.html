@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battlefield - Riwayat Pertandingan</title>
+<link rel="stylesheet" href="battlefield.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Riwayat Pertandingan</h1>
+
+    <div id="historyContainer"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const historyContainer = document.getElementById("historyContainer");
+    const matches = JSON.parse(localStorage.getItem("matchHistory")) || [];
+
+    if(matches.length === 0){
+        const noHistory = document.createElement("div");
+        noHistory.className = "no-history";
+        noHistory.innerText = "Belum ada riwayat pertandingan";
+        historyContainer.appendChild(noHistory);
+        return;
+    }
+
+    matches.forEach(match => {
+        const table = document.createElement("table");
+
+        const header = document.createElement("tr");
+        ["Player", "Team", "Hero", "Result"].forEach(text => {
+            const th = document.createElement("th");
+            th.innerText = text;
+            header.appendChild(th);
+        });
+        table.appendChild(header);
+
+        match.players.forEach(player => {
+            const tr = document.createElement("tr");
+            const tdName = document.createElement("td");
+            tdName.innerText = player.name;
+
+            const tdTeam = document.createElement("td");
+            tdTeam.innerText = player.team;
+
+            const tdHero = document.createElement("td");
+            tdHero.innerText = player.hero;
+
+            const tdResult = document.createElement("td");
+            tdResult.innerText = player.result;
+            tdResult.className = player.result === "Menang" ? "win" : "lose";
+
+            [tdName, tdTeam, tdHero, tdResult].forEach(td => tr.appendChild(td));
+            table.appendChild(tr);
+        });
+
+        historyContainer.appendChild(table);
+    });
+});
+</script>
+
+<a href="profile.html" class="back-btn">← Back</a>
+
+</body>
+</html>

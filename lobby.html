@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lobby - Tes Game</title>
+<link rel="stylesheet" href="lobby.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="background-container">
+<video autoplay muted loop id="bg-video">
+<source src="screenanimation.mp4" type="video/mp4">
+</video>
+</div>
+
+<div class="player-profile" onclick="goPage('profile.html')">
+<div class="avatar"></div>
+<div class="player-info">
+<div class="player-name" id="playerNameDisplay">Player</div>
+<div class="player-level">Lv. 1</div>
+</div>
+</div>
+
+<input type="file" id="bgInput" accept="image/*" style="display: none;">
+
+<div class="top-bar">
+<div class="currency-item">
+<span class="currency-icon coin-icon"></span>
+<span id="coinValue">0</span>
+</div>
+<div class="currency-item">
+<span class="currency-icon diamond-icon"></span>
+<span id="diamondValue">0</span>
+</div>
+</div>
+
+<div class="menu-left">
+<button class="menu-button hero-button" onclick="goPage('heroes.html')">Hero</button>
+<button class="menu-button hero-button" onclick="goPage('shop.html')">Shop</button>
+</div>
+
+<div class="center-content">
+<h1>5v5</h1>
+<button class="play-btn" onclick="goPage('loadingscreen.html')">START</button>
+</div>
+
+<div class="pillar-container">
+<div class="pillar left-pillar"><div class="flame"></div></div>
+<div class="pillar right-pillar"><div class="flame"></div></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyA3C1eDqtcVgPYtMPC3s716s5A_nboxcxU",
+authDomain:"argamoba-99ebd.firebaseapp.com",
+projectId:"argamoba-99ebd",
+storageBucket:"argamoba-99ebd.firebasestorage.app",
+messagingSenderId:"968414985219",
+appId:"1:968414985219:web:3b635ae081776d7ff4e236"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ================= NAV ================= */
+window.goPage = function(page){
+window.location.href = page;
+}
+
+/* ================= CURRENCY SYSTEM ================= */
+function getCoin(){
+return parseInt(localStorage.getItem("player_coin")) || 0;
+}
+
+function getDiamond(){
+return parseInt(localStorage.getItem("player_diamond")) || 0;
+}
+
+function updateCurrencyUI(){
+document.getElementById("coinValue").innerText = getCoin().toLocaleString();
+document.getElementById("diamondValue").innerText = getDiamond().toLocaleString();
+}
+
+/* ================= BG SYSTEM ================= */
+const bgInput = document.getElementById('bgInput');
+
+bgInput.addEventListener('change', function(){
+const file = this.files[0];
+if(file){
+const reader = new FileReader();
+reader.onload = function(e){
+localStorage.setItem('custom-bg', e.target.result);
+document.body.style.backgroundImage = `url(${e.target.result})`;
+document.body.style.backgroundSize = 'cover';
+document.body.style.backgroundPosition = 'center';
+}
+reader.readAsDataURL(file);
+}
+});
+
+/* ================= INIT ================= */
+window.onload = function(){
+
+if(!localStorage.getItem("player_coin")){
+localStorage.setItem("player_coin","11362634");
+}
+
+if(!localStorage.getItem("player_diamond")){
+localStorage.setItem("player_diamond","12320");
+}
+
+updateCurrencyUI();
+
+const savedBg = localStorage.getItem('custom-bg');
+if(savedBg){
+document.body.style.backgroundImage = `url(${savedBg})`;
+document.body.style.backgroundSize = 'cover';
+document.body.style.backgroundPosition = 'center';
+}
+}
+
+/* ================= USERNAME FIREBASE ================= */
+onAuthStateChanged(auth, async(user)=>{
+if(!user){
+window.location.href = "login.html";
+return;
+}
+
+const snap = await getDoc(doc(db,"users",user.uid));
+if(snap.exists()){
+document.getElementById("playerNameDisplay").textContent =
+snap.data().username;
+}
+});
+</script>
+
+</body>
+</html>

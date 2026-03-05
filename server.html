@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server - 5v5</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="server.css">
+</head>
+<body>
+
+<div class="background-container">
+    <img src="fantasy-bg.png" id="bg-image" alt="Background">
+</div>
+
+<div class="server-container">
+    <div class="server-box">
+        <h2>Masukkan Kode Room</h2>
+        <input type="text" id="roomCodeInput" placeholder="Contoh: A9K2LM" maxlength="6">
+        <button onclick="joinRoom()">JOIN</button>
+    </div>
+
+    <div class="server-box">
+        <h2>Buat Room 5v5</h2>
+        <button onclick="createRoom()">BUAT ROOM</button>
+        <div id="createdCode" class="created-code"></div>
+    </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+  apiKey: "AIzaSyA3C1eDqtcVgPYtMPC3s716s5A_nboxcxU",
+  authDomain: "argamoba-99ebd.firebaseapp.com",
+  databaseURL: "https://argamoba-99ebd-default-rtdb.firebaseio.com",
+  projectId: "argamoba-99ebd",
+  storageBucket: "argamoba-99ebd.firebasestorage.app",
+  messagingSenderId: "968414985219",
+  appId: "1:968414985219:web:3b635ae081776d7ff4e236",
+  measurementId: "G-L85TWF24QR"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ===== GENERATE ROOM CODE =====
+function generateCode() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+}
+
+// ===== CREATE ROOM =====
+window.createRoom = async function(){
+    const code = generateCode();
+    await set(ref(db,"rooms/"+code), {
+        createdAt: Date.now(),
+        status:"waiting",
+        players:{}
+    });
+    document.getElementById("createdCode").innerText = "Kode Room: " + code;
+    setTimeout(()=> window.location.href="room.html?code="+code,1500);
+}
+
+// ===== JOIN ROOM =====
+window.joinRoom = async function(){
+    const input = document.getElementById("roomCodeInput").value.toUpperCase();
+    if(!input) return alert("Masukkan kode dulu");
+    const snap = await get(ref(db,"rooms/"+input));
+    if(!snap.exists()){
+        const notif = document.getElementById("notification");
+        notif.innerText="Room tidak ditemukan!";
+        notif.style.display="block";
+        setTimeout(()=>notif.style.display="none",2000);
+        return;
+    }
+    window.location.href="room.html?code="+input;
+}
+</script>
+
+</body>
+</html>

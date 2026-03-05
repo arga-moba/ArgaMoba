@@ -1,0 +1,80 @@
+/* Background dan layout */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.background {
+    background: url('fantasy-bg.png') no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Kotak profile */
+.profile-box {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 360px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Judul */
+.profile-box h2 {
+    color: #fff;
+    margin-bottom: 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+}
+
+/* Label */
+.profile-box label {
+    display: block;
+    text-align: left;
+    color: #fff;
+    margin: 8px 0 4px 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Input field */
+.input-field {
+    width: 90%;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-size: 16px;
+}
+
+/* Tombol */
+.btn-create {
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff7f50, #ff4500);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-create:hover {
+    background: linear-gradient(90deg, #ff4500, #ff7f50);
+}
+
+/* Pesan error / info */
+#msg {
+    margin-top: 15px;
+    font-size: 14px;
+}

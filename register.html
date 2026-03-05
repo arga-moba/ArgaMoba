@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tes Game - Register</title>
+    <link rel="stylesheet" href="register.css">
+</head>
+
+<body>
+
+    <div class="background">
+        <div class="register-container">
+
+            <div class="logo">Tes Game</div>
+            <h2>Create Account</h2>
+
+            <form id="registerForm">
+
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="regConfirm" required>
+                </div>
+
+                <button type="submit" class="btn-register">REGISTER</button>
+
+                <p class="login-link">
+                    Already have account?
+                    <a href="login.html">Login</a>
+                </p>
+
+            </form>
+
+            <p id="regMessage"></p>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+        import { getAuth, createUserWithEmailAndPassword } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        import { getFirestore, doc, setDoc } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3C1eDqtcVgPYtMPC3s716s5A_nboxcxU",
+            authDomain: "argamoba-99ebd.firebaseapp.com",
+            projectId: "argamoba-99ebd",
+            storageBucket: "argamoba-99ebd.firebasestorage.app",
+            messagingSenderId: "968414985219",
+            appId: "1:968414985219:web:3b635ae081776d7ff4e236"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        registerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const username = regUsername.value.trim();
+            const email = regEmail.value.trim();
+            const password = regPassword.value.trim();
+            const confirm = regConfirm.value.trim();
+
+            if (password !== confirm) {
+                regMessage.innerText = "Password tidak sama!";
+                return;
+            }
+
+            try {
+                const userCredential = 
+                    await createUserWithEmailAndPassword(auth, email, password);
+
+                const user = userCredential.user;
+
+                await setDoc(
+                    doc(db, "users", user.uid),
+                    {
+                        username: username,
+                        email: email,
+                        photoURL: "",
+                        createdAt: new Date()
+                    }
+                );
+
+                window.location.href = "login.html";
+
+            } catch (error) {
+                regMessage.innerText = error.message;
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+<body>
+
+    <div class="bg-overlay"></div>
+
+    <div class="profile-container">
+
+        <aside class="sidebar glass">
+            <div class="menu active">Profil</div>
+            <div class="menu battlefield-menu" onclick="goBattlefield()">Battlefield</div>
+            <div class="menu stats-menu" onclick="goStats()">Statistik</div>
+        </aside>
+
+        <main class="main">
+
+            <div class="top-title">
+                <h2>
+                    Player Profile
+                    <span id="profileName" class="highlight"></span>
+                </h2>
+            </div>
+
+            <section class="profile-card glass">
+
+                <div class="left-profile">
+
+                    <div class="avatar-glow">
+                        <img src="ArgaMobaLogo.png" alt="avatar">
+                    </div>
+
+                    <div class="player-info">
+                        <h3 id="playerName"></h3>
+
+                        <p>Nickname:
+                            <span id="playerNick"></span>
+                        </p>
+
+                        <p>ID:
+                            <span id="playerId"></span>
+                        </p>
+
+                        <p class="edit-field">
+                            <label>Server:</label>
+                            <input type="text" id="playerServerInput">
+                            <button class="edit-btn" onclick="saveProfile()">Save</button>
+                        </p>
+
+                        <p class="edit-field">
+                            <label>Location:</label>
+                            <input type="text" id="playerLocationInput">
+                        </p>
+
+                        <p class="edit-field">
+                            <label>Clan:</label>
+                            <input type="text" id="playerClanInput">
+                        </p>
+                    </div>
+
+                </div>
+
+
+            </section>
+
+            <div class="stats glass">
+                <div>Total Pertandingan:
+                    <span id="totalMatch"></span>
+                </div>
+                <div>Menang:
+                    <span id="totalMenang"></span>
+                </div>
+                <div>Kalah:
+                    <span id="totalKalah"></span>
+                </div>
+            </div>
+
+        </main>
+
+        <a href="lobby.html" class="back-btn">← Back to Lobby</a>
+
+    </div>
+
+<script type="module">
+import { initializeApp } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+import { getAuth, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import { getFirestore, doc, getDoc, setDoc, updateDoc } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* ================= FIREBASE CONFIG ================= */
+const firebaseConfig = {
+    apiKey: "AIzaSyA3C1eDqtcVgPYtMPC3s716s5A_nboxcxU",
+    authDomain: "argamoba-99ebd.firebaseapp.com",
+    projectId: "argamoba-99ebd",
+    storageBucket: "argamoba-99ebd.firebasestorage.app",
+    messagingSenderId: "968414985219",
+    appId: "1:968414985219:web:3b635ae081776d7ff4e236"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUserRef = null;
+
+/* ================= LOAD PROFILE ================= */
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+    currentUserRef = userRef;
+
+    let snap = await getDoc(userRef);
+
+    // Jika dokumen belum ada → buat default
+    if (!snap.exists()) {
+        const defaultData = {
+            username: user.email.split("@")[0],
+            server: "Default Server",
+            location: "Unknown",
+            clan: "None",
+            match: 0,
+            menang: 0,
+            kalah: 0
+        };
+
+        await setDoc(userRef, defaultData);
+        snap = await getDoc(userRef);
+    }
+
+    const player = snap.data();
+
+    // Jika ada field kosong → isi default
+    const safeData = {
+        username: player.username || user.email.split("@")[0],
+        server: player.server || "Default Server",
+        location: player.location || "Unknown",
+        clan: player.clan || "None",
+        match: player.match || 0,
+        menang: player.menang || 0,
+        kalah: player.kalah || 0
+    };
+
+    await updateDoc(userRef, safeData);
+
+    // Render ke UI (tidak mengubah tampilan)
+    document.getElementById("profileName").textContent = safeData.username;
+    document.getElementById("playerName").textContent = safeData.username;
+    document.getElementById("playerNick").textContent = safeData.username;
+    document.getElementById("playerId").textContent = user.uid;
+
+    document.getElementById("playerServerInput").value = safeData.server;
+    document.getElementById("playerLocationInput").value = safeData.location;
+    document.getElementById("playerClanInput").value = safeData.clan;
+
+    document.getElementById("totalMatch").textContent = safeData.match;
+    document.getElementById("totalMenang").textContent = safeData.menang;
+    document.getElementById("totalKalah").textContent = safeData.kalah;
+});
+
+/* ================= SAVE PROFILE ================= */
+window.saveProfile = async function () {
+
+    if (!currentUserRef) return;
+
+    await updateDoc(currentUserRef, {
+        server: document.getElementById("playerServerInput").value,
+        location: document.getElementById("playerLocationInput").value,
+        clan: document.getElementById("playerClanInput").value
+    });
+
+    alert("Profile berhasil disimpan!");
+};
+
+/* ================= NAVIGATION ================= */
+window.goBattlefield = function () {
+    window.location.href = "battlefield.html";
+};
+
+window.goStats = function () {
+    window.location.href = "stats.html";
+};
+</script>
+
+</body>
+
+</html>

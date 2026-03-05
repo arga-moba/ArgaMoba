@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop</title>
+<link rel="stylesheet" href="shop.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="shop-container">
+
+    <button class="back-btn" onclick="goBack()">← Back</button>
+
+    <div class="sidebar">
+        <h2>SHOP</h2>
+        <button onclick="showTab('diamond')">Diamond</button>
+        <button onclick="showTab('coin')">Koin</button>
+        <button onclick="showTab('hero')">Hero</button>
+    </div>
+
+    <div class="main-content">
+        <div id="shopContent"></div>
+    </div>
+
+</div>
+
+<script>
+
+/* ================= DATA INITIAL ================= */
+
+if(!localStorage.getItem("player_coin")){
+    localStorage.setItem("player_coin", "11362634");
+}
+
+if(!localStorage.getItem("player_diamond")){
+    localStorage.setItem("player_diamond", "12320");
+}
+
+const heroes = [
+    { id:"Tharion Blackthorn", name:"Tharion Blackthorn", role:"marksman", img:"mm1.png", price:32000 },
+    { id:"Elyndra Starfall", name:"Elyndra Starfall", role:"marksman", img:"mm2.png", price:32000 },
+
+    { id:"Kaelrik Stormrider", name:"Kaelrik Stormrider", role:"fighter", img:"fighter1.png", price:32000 },
+    { id:"Veylor Nightbane", name:"Veylor Nightbane", role:"fighter", img:"fighter2.png", price:32000 },
+    { id:"Darynth Firebrand", name:"Darynth Firebrand", role:"fighter", img:"fighter3.png", price:32000 },
+    { id:"Malric Ironfist", name:"Malric Ironfist", role:"fighter", img:"fighter4.png", price:32000 },
+    { id:"Vaelithra Moonshade", name:"Vaelithra Moonshade", role:"fighter", img:"fighter5.png", price:32000 },
+
+    { id:"Ryvann Frostborn", name:"Ryvann Frostborn", role:"tank", img:"tank1.png", price:32000 },
+    { id:"Lucien Starforge", name:"Lucien Starforge", role:"tank", img:"tank2.png", price:32000 },
+
+    { id:"Tarell Emberstrike", name:"Tarell Emberstrike", role:"support", img:"support1.png", price:32000 },
+    { id:"Syrris Emberveil", name:"Syrris Emberveil", role:"support", img:"support2.png", price:32000 },
+
+    { id:"Zephran Shadowveil", name:"Zephran Shadowveil", role:"assassin", img:"assassin1.png", price:32000 },
+    { id:"Lysera Dawnwhisper", name:"Lysera Dawnwhisper", role:"assassin", img:"assassin2.png", price:32000 },
+    { id:"Neo Richard", name:"Neo Richard", role:"assassin", img:"assassin3.png", price:32000 },
+
+
+    { id:"Orvyn Moonbreaker", name:"Orvyn Moonbreaker", role:"mage", img:"mage1.png", price:32000 },
+    { id:"Kaelithra Frostwind", name:"Kaelithra Frostwind", role:"mage", img:"mage2.png", price:32000 },
+    { id:"Sylas Windrider", name:"Sylas Windrider", role:"mage", img:"mage3.png", price:32000 }
+];
+
+/* ================= UTIL ================= */
+
+function goBack(){
+    window.location.href = "lobby.html";
+}
+
+function getCoin(){
+    return parseInt(localStorage.getItem("player_coin")) || 0;
+}
+
+function setCoin(value){
+    localStorage.setItem("player_coin", value);
+}
+
+function getDiamond(){
+    return parseInt(localStorage.getItem("player_diamond")) || 0;
+}
+
+function setDiamond(value){
+    localStorage.setItem("player_diamond", value);
+}
+
+/* ================= TAB ================= */
+
+function showTab(tab){
+    if(tab === "diamond") renderDiamond();
+    else if(tab === "coin") renderCoin();
+    else if(tab === "hero") renderHeroes();
+}
+
+/* ================= DIAMOND ================= */
+
+function renderDiamond(){
+
+    const container = document.getElementById("shopContent");
+    const diamond = getDiamond();
+
+    container.innerHTML = `
+        <h1>Diamond Shop</h1>
+        <h3>Diamond: ${diamond.toLocaleString()}</h3>
+
+      
+        <div class="shop-item">
+            35 Diamond - Rp 5.000
+            <button onclick="buyDiamond(100)">Beli</button>
+        </div>
+
+        <div class="shop-item">
+            100 Diamond - Rp 15.000
+            <button onclick="buyDiamond(100)">Beli</button>
+        </div>
+
+        <div class="shop-item">
+            300 Diamond - Rp 35.000
+            <button onclick="buyDiamond(100)">Beli</button>
+        </div>
+        
+        <div class="shop-item">
+            700 Diamond - Rp 75.000
+            <button onclick="buyDiamond(500)">Beli</button>
+        </div>
+       
+        <div class="shop-item">
+            1500 Diamond - Rp 150.000
+            <button onclick="buyDiamond(1000)">Beli</button>
+        </div>
+    `;
+}
+
+function buyDiamond(amount){
+    localStorage.setItem("pendingDiamond", amount);
+    window.location.href = "dana.html";
+}
+
+/* ================= KOIN ================= */
+
+function renderCoin(){
+
+    const container = document.getElementById("shopContent");
+    const coin = getCoin();
+    const diamond = getDiamond();
+
+    container.innerHTML = `
+        <h1>Koin Shop</h1>
+        <h3>Koin: ${coin.toLocaleString()}</h3>
+        <h4>Diamond: ${diamond.toLocaleString()}</h4>
+
+        <div class="shop-item">
+            10.000 Koin - 50 Diamond
+            <button ${diamond < 50 ? "disabled" : ""} onclick="buyCoin(10000,50)">
+                ${diamond < 50 ? "Diamond Tidak Cukup" : "Beli"}
+            </button>
+        </div>
+
+        <div class="shop-item">
+            50.000 Koin - 200 Diamond
+            <button ${diamond < 200 ? "disabled" : ""} onclick="buyCoin(50000,200)">
+                ${diamond < 200 ? "Diamond Tidak Cukup" : "Beli"}
+            </button>
+        </div>
+    `;
+}
+
+function buyCoin(coinAmount, diamondCost){
+
+    let coin = getCoin();
+    let diamond = getDiamond();
+
+    if(diamond >= diamondCost){
+        diamond -= diamondCost;
+        coin += coinAmount;
+
+        setDiamond(diamond);
+        setCoin(coin);
+
+        renderCoin();
+    }
+}
+
+/* ================= HERO ================= */
+
+function renderHeroes(){
+
+    const container = document.getElementById("shopContent");
+    const coin = getCoin();
+
+    container.innerHTML = `
+        <h1>Hero Shop</h1>
+        <h3>Koin: ${coin.toLocaleString()}</h3>
+        <div class="hero-grid"></div>
+    `;
+
+    const grid = container.querySelector(".hero-grid");
+
+    heroes.forEach(hero => {
+
+        const owned = localStorage.getItem("hero_" + hero.id);
+        const notEnough = coin < hero.price;
+
+        const card = document.createElement("div");
+        card.className = "hero-card";
+
+        card.innerHTML = `
+            <img src="${hero.img}">
+            <h3>${hero.name}</h3>
+            <p>Harga: ${hero.price.toLocaleString()} Koin</p>
+            ${
+                owned
+                ? `<span class="owned">Hero sudah dimiliki</span>`
+                : `<button ${notEnough ? "disabled" : ""} onclick="buyHero('${hero.id}', ${hero.price})">
+                    ${notEnough ? "Koin Tidak Cukup" : "Beli"}
+                  </button>`
+            }
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+function buyHero(id, price){
+
+    let coin = getCoin();
+
+    if(coin >= price){
+        coin -= price;
+        setCoin(coin);
+        localStorage.setItem("hero_" + id, "owned");
+        renderHeroes();
+    }
+}
+
+/* ================= INIT ================= */
+
+showTab("hero");
+
+</script>
+</body>
+</html>

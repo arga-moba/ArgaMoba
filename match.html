@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match - Pick Hero</title>
+<link rel="stylesheet" href="match.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h2>Pick Your Hero</h2>
+
+<div id="playersInfo"></div>
+
+<div id="heroList">
+    <button onclick="pickHero('Mage')">Mage</button>
+    <button onclick="pickHero('Warrior')">Warrior</button>
+    <button onclick="pickHero('Assassin')">Assassin</button>
+    <button onclick="pickHero('Tank')">Tank</button>
+</div>
+
+<p id="statusText"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getFirestore, doc, updateDoc, getDoc, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getAuth, onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "argamoba-99ebd",
+    storageBucket: "argamoba-99ebd.firebasestorage.app",
+    messagingSenderId: "968414985219",
+    appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const matchId = "I6pW5VRFQGjwMUV9e5zr"; // GANTI DENGAN ID MATCH
+const matchRef = doc(db, "matches", matchId);
+
+const playersInfo = document.getElementById("playersInfo");
+const statusText = document.getElementById("statusText");
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "match.html";
+    return;
+  }
+
+  const snap = await getDoc(matchRef);
+  if (!snap.exists()) {
+    statusText.innerText = "Match tidak ditemukan.";
+    return;
+  }
+
+  let data = snap.data();
+  let players = data.players || {};
+
+  // Maksimal 2 player
+  if (!players[user.uid] && Object.keys(players).length >= 2) {
+    statusText.innerText = "Match penuh.";
+    return;
+  }
+
+  // Jika belum join
+  if (!players[user.uid]) {
+    players[user.uid] = {
+      username: user.email,
+      pickedHero: ""
+    };
+
+    await updateDoc(matchRef, { players });
+  }
+});
+
+window.pickHero = async function(heroName) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const snap = await getDoc(matchRef);
+  let data = snap.data();
+  let players = data.players;
+
+  players[user.uid].pickedHero = heroName;
+
+  await updateDoc(matchRef, { players });
+};
+
+onSnapshot(matchRef, async (snap) => {
+  const data = snap.data();
+  if (!data || !data.players) return;
+
+  const players = data.players;
+
+  playersInfo.innerHTML = "";
+
+  Object.values(players).forEach(p => {
+    const div = document.createElement("div");
+    div.innerText = p.username + " - " + (p.pickedHero || "Belum pilih");
+    playersInfo.appendChild(div);
+  });
+
+  const allPicked = 
+    Object.keys(players).length === 2 &&
+    Object.values(players).every(p => p.pickedHero !== "");
+
+  if (allPicked && data.status !== "locked") {
+    await updateDoc(matchRef, { status: "locked" });
+    window.location.href = "game.html";
+  }
+
+  if (!allPicked) {
+    statusText.innerText = "Menunggu player memilih hero...";
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Selection</title>
+<link rel="stylesheet" href="heroes.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="hero-container">
+
+    <button class="back-btn" onclick="goBack()">← Back to Lobby</button>
+
+    <div class="sidebar">
+        <h2>ROLE</h2>
+        <button onclick="filterHero('all')">Semua</button>
+        <button onclick="filterHero('assassin')">Assassin</button>
+        <button onclick="filterHero('mage')">Mage</button>
+        <button onclick="filterHero('marksman')">Marksman</button>
+        <button onclick="filterHero('fighter')">Fighter</button>
+        <button onclick="filterHero('tank')">Tank</button>
+        <button onclick="filterHero('support')">Support</button>
+    </div>
+
+    <div class="main-content">
+        <div class="hero-header">
+            <h1>HERO LIST</h1>
+        </div>
+        <div class="hero-grid" id="heroGrid"></div>
+    </div>
+
+</div>
+
+<script>
+const heroes = [
+    { name: "Tharion Blackthorn", role: "marksman", img: "mm1.png" },
+    { name: "Elyndra Starfall", role: "marksman", img: "mm2.png" },
+    { name: "Kaelrik Stormrider", role: "fighter", img: "fighter1.png" },
+    { name: "Veylor Nightbane", role: "fighter", img: "fighter2.png" },
+    { name: "Darynth Firebrand", role: "fighter", img: "fighter3.png" },
+    { name: "Malric Ironfist", role: "fighter", img: "fighter4.png" },
+    { name: "Vaelithra Moonshade", role: "fighter", img: "fighter5.png" },
+    { name: "Ryvann Frostborn", role: "tank", img: "tank1.png" },
+    { name: "Lucien Starforge", role: "tank", img: "tank2.png" },
+    { name: "Tarell Emberstrike", role: "support", img: "support1.png" },
+    { name: "Syrris Emberveil", role: "support", img: "support2.png" },
+    { name: "Zephran Shadowveil", role: "assassin", img: "assassin1.png" },
+    { name: "Lysera Dawnwhisper", role: "assassin", img: "assassin2.png" },
+    { name: "Neo Richard", role: "assassin", img: "assassin3.png" },
+    { name: "Orvyn Moonbreaker", role: "mage", img: "mage1.png" },
+    { name: "Kaelithra Frostwind", role: "mage", img: "mage2.png" },
+    { name: "Sylas Windrider", role: "mage", img: "mage3.png" }
+];
+
+// inisialisasi ownedHeroes di localStorage
+if(!localStorage.getItem("ownedHeroes")){
+    const initialOwned = ["Tharion Blackthorn","Kaelrik Stormrider","Ryvann Frostborn"];
+    localStorage.setItem("ownedHeroes", JSON.stringify(initialOwned));
+}
+
+function goBack(){
+    window.location.href = "lobby.html";
+}
+
+function renderHeroes(filter="all"){
+    const grid = document.getElementById("heroGrid");
+    grid.style.opacity = 0;
+    const ownedHeroes = JSON.parse(localStorage.getItem("ownedHeroes"));
+
+    setTimeout(()=>{
+        grid.innerHTML = "";
+        heroes.filter(hero=>filter==="all" || hero.role===filter).forEach(hero=>{
+            const isOwned = ownedHeroes.includes(hero.name);
+            const card = document.createElement("div");
+            card.className = "hero-card";
+            card.innerHTML = `
+                <div class="hero-img-container" style="position: relative;">
+                    <img src="${hero.img}" class="hero-img" ${isOwned?"":"style='opacity:0.4;'"} >
+                    ${!isOwned?'<img src="gembok.jpeg" class="lock-icon" onclick="buyHero(\''+hero.name+'\')">':''}
+                </div>
+                <div class="hero-info">
+                    <div class="hero-name">${hero.name}</div>
+                    <div class="hero-role">${hero.role.toUpperCase()}</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+        grid.style.opacity = 1;
+    },200);
+}
+
+function filterHero(role){
+    renderHeroes(role);
+}
+
+function buyHero(heroName){
+    let owned = JSON.parse(localStorage.getItem("ownedHeroes"));
+    if(!owned.includes(heroName)){
+        if(confirm(`Beli hero ${heroName}?`)){
+            owned.push(heroName);
+            localStorage.setItem("ownedHeroes", JSON.stringify(owned));
+            renderHeroes(); // refresh grid
+        }
+    }
+}
+
+renderHeroes();
+</script>
+
+</body>
+</html>

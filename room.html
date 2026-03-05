@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room 5v5</title>
+<link rel="stylesheet" href="room.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="room-header">
+    <div id="roomCodeDisplay">ROOM: ----</div>
+    <div id="playerCount">0/10</div>
+    <div id="timerDisplay"></div>
+</div>
+
+<div class="host-control">
+    <input type="password" id="hostPassword" placeholder="Enter Host Password">
+    <button id="becomeHostBtn">Become Host</button>
+</div>
+
+<div class="arena">
+    <div class="team blue">
+        <h2>BLUE TEAM</h2>
+        <div class="slots" id="blueTeam">
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+        </div>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="team red">
+        <h2>RED TEAM</h2>
+        <div class="slots" id="redTeam">
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+        </div>
+    </div>
+</div>
+
+<div class="spectator-wrapper">
+    <div class="team spectator">
+        <h2>SPECTATOR</h2>
+        <div class="slots" id="spectatorTeam">
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+            <div class="slot empty">Empty</div>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-control">
+    <button id="readyBtn">READY</button>
+    <button id="startBtn" disabled style="display:none;">START MATCH</button>
+</div>
+
+<button id="backBtn">← Back</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, get, update, onValue, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA3C1eDqtcVgPYtMPC3s716s5A_nboxcxU",
+  authDomain: "argamoba-99ebd.firebaseapp.com",
+  databaseURL: "https://argamoba-99ebd-default-rtdb.firebaseio.com",
+  projectId: "argamoba-99ebd",
+  storageBucket: "argamoba-99ebd.appspot.com",
+  messagingSenderId: "968414985219",
+  appId: "1:968414985219:web:3b635ae081776d7ff4e236"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const params = new URLSearchParams(window.location.search);
+const roomCode = params.get("code");
+if (!roomCode) window.location.href = "server.html";
+
+document.getElementById("roomCodeDisplay").innerText = "ROOM: " + roomCode;
+
+let playerId = localStorage.getItem("playerId");
+if (!playerId) {
+  playerId = crypto.randomUUID();
+  localStorage.setItem("playerId", playerId);
+}
+
+const playerName = localStorage.getItem("username") || "Player_" + Math.floor(Math.random()*999);
+const roomRef = ref(db, "rooms/" + roomCode);
+
+let isHost = false;
+let selectedPlayerId = null;
+
+// JOIN ROOM
+async function joinRoom() {
+  const snap = await get(roomRef);
+  if (!snap.exists()) {
+    window.location.href = "server.html";
+    return;
+  }
+
+  const data = snap.val();
+
+  if (!data.host) {
+    await update(roomRef, { host: playerId });
+  }
+
+  const players = data.players || {};
+
+  if (!players[playerId]) {
+
+    let blue = Object.values(players).filter(p => p.team === "blue").length;
+    let red = Object.values(players).filter(p => p.team === "red").length;
+
+    let team = blue < 5 ? "blue" : red < 5 ? "red" : "spectator";
+
+    await update(ref(db, `rooms/${roomCode}/players/${playerId}`), {
+      name: playerName,
+      team: team,
+      ready: false
+    });
+  }
+
+  onDisconnect(ref(db, `rooms/${roomCode}/players/${playerId}`)).remove();
+}
+
+// RENDER
+function render(data) {
+
+  isHost = (data.host === playerId);
+
+  const blueSlots = document.querySelectorAll("#blueTeam .slot");
+  const redSlots = document.querySelectorAll("#redTeam .slot");
+  const specSlots = document.querySelectorAll("#spectatorTeam .slot");
+
+  [...blueSlots, ...redSlots, ...specSlots].forEach(slot=>{
+    slot.innerText="Empty";
+    slot.classList.remove("ready-glow");
+  });
+
+  const players = data.players || {};
+  const bluePlayers=[], redPlayers=[], specPlayers=[];
+
+  Object.entries(players).forEach(([id,player])=>{
+    if(player.team==="blue") bluePlayers.push({id,...player});
+    else if(player.team==="red") redPlayers.push({id,...player});
+    else specPlayers.push({id,...player});
+  });
+
+  function fill(slots,list,teamName){
+    list.forEach((player,i)=>{
+      if(!slots[i]) return;
+
+      slots[i].innerText = player.name;
+      if(player.ready) slots[i].classList.add("ready-glow");
+
+      if(isHost){
+        slots[i].onclick = ()=>{
+          if(!selectedPlayerId){
+            selectedPlayerId = player.id;
+            slots[i].style.outline = "2px solid yellow";
+          } else {
+            update(ref(db, `rooms/${roomCode}/players/${selectedPlayerId}`), { team: teamName });
+            selectedPlayerId = null;
+          }
+        };
+      }
+    });
+  }
+
+  fill(blueSlots,bluePlayers,"blue");
+  fill(redSlots,redPlayers,"red");
+  fill(specSlots,specPlayers,"spectator");
+
+  const activeCount = Object.keys(players).length;
+  document.getElementById("playerCount").innerText = activeCount + "/10";
+
+  const startBtn = document.getElementById("startBtn");
+  startBtn.style.display = isHost ? "inline-block" : "none";
+
+  const allReady = activeCount>0 && Object.values(players).every(p=>p.ready);
+  startBtn.disabled = !allReady;
+
+  if(data.status==="started"){
+    window.location.href="match.html?code="+roomCode;
+  }
+}
+
+// HOST PASSWORD
+document.getElementById("becomeHostBtn").onclick = async ()=>{
+  const pw = document.getElementById("hostPassword").value.trim();
+  if(pw === "HostOfTheRoom200908"){
+    await update(roomRef,{host:playerId});
+  } else {
+    alert("Password salah.");
+  }
+};
+
+// READY
+document.getElementById("readyBtn").onclick = async ()=>{
+  const pRef=ref(db,`rooms/${roomCode}/players/${playerId}`);
+  const snap=await get(pRef);
+  if(!snap.exists()) return;
+
+  const cur=snap.val();
+  await update(pRef,{ready:!cur.ready});
+};
+
+// START
+document.getElementById("startBtn").onclick = async ()=>{
+  if(!isHost) return;
+
+  const snap=await get(roomRef);
+  const players=Object.values(snap.val().players||{});
+  const allReady=players.length>0 && players.every(p=>p.ready);
+
+  if(!allReady){
+    alert("Semua player harus READY dulu.");
+    return;
+  }
+
+  await update(roomRef,{status:"started"});
+};
+
+// BACK
+document.getElementById("backBtn").onclick = async ()=>{
+  try{
+    await remove(ref(db, `rooms/${roomCode}/players/${playerId}`));
+  }catch(e){}
+  window.location.href="server.html";
+};
+
+joinRoom();
+onValue(roomRef,(snap)=>{ if(snap.exists()) render(snap.val()); });
+
+</script>
+</body>
+</html>

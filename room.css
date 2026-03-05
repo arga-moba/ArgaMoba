@@ -1,0 +1,426 @@
+/* room.css */
+
+/* ===== BODY ===== */
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: url('fantasy-bg.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+}
+
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: rgba(0,0,0,0.5);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* ===== ARENA ===== */
+.arena {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin: 20px;
+}
+
+.team {
+    flex: 1;
+    margin: 0 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.team h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.slots {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.slot {
+    background: rgba(255,255,255,0.1);
+    padding: 8px;
+    border-radius: 5px;
+    text-align: center;
+    position: relative;
+    cursor: default;
+}
+
+.slot.ready-glow {
+    box-shadow: 0 0 10px 2px #00ff88;
+}
+
+/* Kick button */
+.kick-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ff4d4d;
+    border: none;
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* VS label */
+.vs {
+    font-size: 24px;
+    font-weight: bold;
+    align-self: center;
+    margin: 0 10px;
+}
+
+/* ===== SPECTATOR ===== */
+.spectator-wrapper {
+    margin: 20px;
+}
+
+.team.spectator {
+    background: rgba(0,0,0,0.4);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#spectatorTeam .slot {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#spectatorTeam .slot:hover {
+    background: rgba(0,255,136,0.2);
+}
+
+/* ===== BOTTOM CONTROLS ===== */
+.bottom-control {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px;
+}
+
+#readyBtn, #startBtn {
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+#readyBtn {
+    background: #00ff88;
+    color: #000;
+}
+
+#readyBtn:hover {
+    background: #00cc70;
+}
+
+#startBtn {
+    background: #ffbb33;
+    color: #000;
+}
+
+#startBtn:disabled {
+    background: rgba(255,187,51,0.5);
+    cursor: not-allowed;
+}
+
+/* ===== BACK BUTTON ===== */
+#backBtn {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    padding: 6px 12px;
+    font-size: 16px;
+    background: rgba(255,0,0,0.9);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+/* ===== REQUEST CONTAINER ===== */
+.requests-container {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 220px;
+    z-index: 1000;
+}
+
+.request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.1);
+    margin: 5px 0;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.request-item button {
+    margin-left: 3px;
+    font-size: 12px;
+    padding: 2px 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.request-item button:first-child {
+    background: #00ff88;
+    color: #000;
+}
+
+.request-item button:last-child {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+.host-control { margin: 10px 20px; display:flex; gap:10px; align-items:center; }
+#hostPassword { padding:6px 10px; border-radius:6px; border:none; width:180px; }
+#becomeHostBtn { padding:6px 12px; border-radius:6px; border:none; background-color:#4a90e2; color:white; cursor:pointer; font-weight:bold; transition:0.3s;}
+#becomeHostBtn:hover { background-color:#357ab7; }
+
+.kick-btn, .spectator-btn, .move-btn {
+    margin-left: 5px; padding:2px 6px; font-size:11px; border-radius:4px; border:none; cursor:pointer;
+}
+.kick-btn { background-color:#ef4444; color:white; }
+.kick-btn:hover { background-color:#dc2626; }
+.spectator-btn { background-color:#facc15; color:#111; }
+.spectator-btn:hover { background-color:#eab308; }
+.move-btn { background-color:#3b82f6; color:white; }
+.move-btn:hover { background-color:#2563eb; }
+
+.slot-card { 
+    background: rgba(30,30,50,0.8); 
+    padding: 8px 12px; 
+    margin: 5px 0; 
+    border-radius: 8px; 
+    display:flex; 
+    justify-content: space-between; 
+    align-items:center; 
+}
+.host-btns button { margin-left:4px; padding:2px 6px; font-size:11px; border-radius:4px; border:none; cursor:pointer; }
+.kick-btn{ background:#ef4444;color:white; } .kick-btn:hover{ background:#dc2626; }
+.spectator-btn{ background:#facc15;color:#111; } .spectator-btn:hover{ background:#eab308; }
+.move-btn{ background:#3b82f6;color:white; } .move-btn:hover{ background:#2563eb; }
+
+.ready-glow { box-shadow: 0 0 10px #4ade80; }
+
+/* ===== HOST & SPECTATOR CONTROLS ===== */
+.host-control {
+    margin: 10px 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#hostPassword {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    width: 180px;
+}
+
+#becomeHostBtn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background-color: #4a90e2;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+#becomeHostBtn:hover {
+    background-color: #357ab7;
+}
+
+/* ===== SLOT CARD VISUAL ===== */
+.slot-card {
+    background: rgba(30, 30, 50, 0.8);
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slot.empty {
+    background: rgba(59,130,246,0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.slot.empty:hover {
+    background: rgba(59,130,246,0.4);
+}
+
+/* HOST BUTTONS INSIDE SLOT */
+.host-btns button {
+    margin-left: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.kick-btn { background:#ef4444; color:white; }
+.kick-btn:hover { background:#dc2626; }
+.spectator-btn { background:#facc15; color:#111; }
+.spectator-btn:hover { background:#eab308; }
+.move-btn { background:#3b82f6; color:white; }
+.move-btn:hover { background:#2563eb; }
+
+/* ===== READY GLOW ===== */
+.ready-glow {
+    box-shadow: 0 0 10px #4ade80;
+}
+
+/* ===== REQUEST CONTAINER ===== */
+.requests-container {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 220px;
+    z-index: 1000;
+}
+
+.request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.1);
+    margin: 5px 0;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.request-item button {
+    margin-left: 3px;
+    font-size: 12px;
+    padding: 2px 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.request-item button:first-child {
+    background: #00ff88;
+    color: #000;
+}
+
+.request-item button:last-child {
+    background: #ff4d4d;
+    color: #fff;
+}   
+
+/* ===== HOST FREE MOVE SLOT ===== */
+.slot.hover-highlight {
+    background: rgba(59,130,246,0.3);
+}
+.slot:hover {
+    cursor: pointer;
+}
+
+/* tambahan slot host */
+.slot.empty {
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed #888;
+    cursor: pointer;
+}
+
+.slot-card {
+    background: rgba(30,30,50,0.8);
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 8px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    cursor: pointer;
+}
+
+.slot-card:hover {
+    box-shadow: 0 0 8px #3b82f6;
+}
+
+.move-btn { margin-left:4px; padding:2px 6px; font-size:11px; border-radius:4px; border:none; cursor:pointer; background:#3b82f6; color:white;}
+.move-btn:hover { background:#2563eb; }
+
+.slot.empty { opacity: 0.5; }
+.slot:hover { transform: scale(1.05); transition:0.2s; }
+
+.team.blue h2 {
+    color: #3b82f6; /* biru */
+}
+
+.team.red h2 {
+    color: #ef4444; /* merah */
+}
+
+.team.spectator h2 {
+    color: #facc15; /* kuning untuk spectator */
+}
+
+.bottom-control {
+    position: relative;
+    z-index: 50;
+}
+
+/* ===== FIX CLICK LAYER ISSUE ===== */
+
+.arena,
+.spectator-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.bottom-control {
+    position: relative;
+    z-index: 9999;
+}
+
+#backBtn {
+    z-index: 9999;
+}
+
+/* pastikan tidak ada layer tak terlihat nutup tombol */
+body::before,
+body::after {
+    pointer-events: none;
+}
+
+.arena {
+    pointer-events: auto;
+}
+
+.arena::before,
+.arena::after {
+    pointer-events: none;
+}
